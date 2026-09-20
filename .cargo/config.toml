@@ -1,3 +1,8 @@
+# The games depend on the published blitkit, so each one clones and runs on its
+# own. Inside this folder they build against the engine checkout instead, which
+# is what keeps a breaking engine change visible before it ships.
+paths = ["blitkit"]
+
 # Every repo under this folder builds into one shared directory, so the engine
 # and its games stop compiling the same dependencies four times over.
 [build]
