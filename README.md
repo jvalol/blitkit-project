@@ -17,11 +17,12 @@ points them at one shared build directory.
 ## Getting set up
 
 Clone this repo, then clone the other four inside it. The games find the engine
-at `../blitkit`, so the folder names matter.
+at `../blitkit`, so those four folder names matter. What this one is called does
+not.
 
 ```
-git clone git@github.com:jvalol/blitkit-project.git blitkit
-cd blitkit
+git clone git@github.com:jvalol/blitkit-project.git
+cd blitkit-project
 git clone git@github.com:jvalol/blitkit.git
 git clone git@github.com:jvalol/pong.git
 git clone git@github.com:jvalol/snake.git
