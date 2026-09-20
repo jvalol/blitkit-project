@@ -13,3 +13,21 @@ test of using it from outside.
 
 `./check-all` tests and lints all four in dependency order. `.cargo/config.toml`
 points them at one shared build directory.
+
+## Getting set up
+
+Clone this repo, then clone the other four inside it. The games find the engine
+at `../blitkit`, so the folder names matter.
+
+```
+git clone git@github.com:jvalol/blitkit-project.git blitkit
+cd blitkit
+git clone git@github.com:jvalol/blitkit.git
+git clone git@github.com:jvalol/pong.git
+git clone git@github.com:jvalol/snake.git
+git clone git@github.com:jvalol/tetris.git
+./check-all
+```
+
+Rust 1.87 or newer, which is wgpu's minimum. Each game runs with `cargo run`
+from its own folder.
