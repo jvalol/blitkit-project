@@ -1,0 +1,9 @@
+# The shared build directory every repo here writes into.
+/target
+
+# Each of these is its own repo, cloned beside the others. This repo only holds
+# what ties them together.
+/blitkit/
+/pong/
+/snake/
+/tetris/

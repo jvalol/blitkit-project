@@ -1,0 +1,4 @@
+# Every repo under this folder builds into one shared directory, so the engine
+# and its games stop compiling the same dependencies four times over.
+[build]
+target-dir = "target"
