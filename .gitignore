@@ -1,10 +1,10 @@
-# The shared build directory every repo here writes into.
-/target
+# This repo owns only what ties the project together. Everything else in here is
+# its own repo, cloned beside the others, or a build directory. Ignoring by
+# default means a new game needs no edit here, and a stray checkout can never be
+# committed as a gitlink by accident.
+/*
 
-# Each of these is its own repo, cloned beside the others. This repo only holds
-# what ties them together.
-/blitkit/
-/pong/
-/snake/
-/tetris/
-/marble/
+!/.gitignore
+!/README.md
+!/check-all
+!/.cargo
