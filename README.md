@@ -35,3 +35,16 @@ git clone git@github.com:jvalol/marble.git
 
 Rust 1.87 or newer, which is wgpu's minimum. Each game runs with `cargo run`
 from its own folder.
+
+## Demos
+
+The engine carries its own, run from the `blitzkit` folder.
+
+```
+cargo run --release --example klein
+```
+
+A Klein bottle you can turn any way you drag it, drawn as a wire mesh so the
+neck is visible where it passes through the wall. The surface has no outside, so
+both sides of it are drawn and neither one is culled away. `cubes` and `rolling`
+are the other two: lit textured geometry, and a ball with collision and shadows.
