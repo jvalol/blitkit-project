@@ -75,5 +75,17 @@ after it passes through the wall](https://raw.githubusercontent.com/jvalol/blitz
 M gives you the solid surface and T turns that to glass, which is the other way
 to watch the neck carry on inside the body.
 
+```
+cargo run --release --example tunnel
+```
+
+![Looking down a tunnel of dark and light checks receding to a vanishing point,
+with a gold ring hanging off centre partway down it](https://raw.githubusercontent.com/jvalol/blitzkit/main/media/tunnel.png)
+
+Flying down the inside of a surface, which is the one place two sided geometry
+is the whole picture rather than a detail: without it the tunnel would have no
+walls at all. The tube and the rings are both formulas. Steer through the gold
+ring, which is always the next one.
+
 `cubes` and `rolling` are the other two: lit textured geometry, and a ball with
 collision and shadows.
