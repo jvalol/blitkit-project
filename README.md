@@ -8,19 +8,19 @@ A graphics engine in Rust, and the games that prove it works.
 - [tetris](tetris) — the third.
 - [marble](marble) — the first one in 3D.
 
-Each is its own repo. They live together here because the 2D games depend on the
-engine by relative path, which is what keeps the engine honest: every game is a
-test of using it from outside. Marble goes further and takes blitzkit from
-crates.io, the way anyone else would.
+Each is its own repo, and each depends on the published blitzkit the way anyone
+else would. They live together here because `.cargo/config.toml` overrides that
+with the engine checkout, which is what keeps the engine honest: every game is a
+test of using it from outside, and a breaking change shows up before it ships.
 
 `./check-all` tests and lints all five in dependency order. `.cargo/config.toml`
 points them at one shared build directory.
 
 ## Getting set up
 
-Clone this repo, then clone the others inside it. Pong, snake and tetris find
-the engine at `../blitzkit`, so those folder names matter. What this one is
-called does not, and marble takes blitzkit from crates.io rather than by path.
+Clone this repo, then clone the others inside it. The override names the engine
+folder `blitzkit`, so that one matters. What this folder is called does not, and
+outside it the games build against crates.io.
 
 ```
 git clone git@github.com:jvalol/blitzkit-project.git

@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Tests and lints the engine and every game built on it, in that order.
 #
-# The games depend on dynamo_lib by relative path, so an engine change can break
-# them without anyone noticing until the game is run. This is the one command
-# that says whether the whole project still holds together.
+# Inside this folder the games build against the engine checkout rather than the
+# published crate, so an engine change can break them without anyone noticing
+# until the game is run. This is the one command that says whether the whole
+# project still holds together.
 
 set -uo pipefail
 cd "$(dirname "$0")" || exit 1
