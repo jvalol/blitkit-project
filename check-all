@@ -9,7 +9,7 @@
 set -uo pipefail
 cd "$(dirname "$0")" || exit 1
 
-repos=(blitzkit pong snake tetris marble)
+repos=(blitzkit pong snake tetris marble slider)
 failed=()
 
 for repo in "${repos[@]}"; do
