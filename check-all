@@ -19,9 +19,17 @@ for repo in "${repos[@]}"; do
   fi
 done
 
+# The tunnel example and slider share an idea and a set of numbers. Nothing in
+# either repo can see the other, so this is the only place the two can be held
+# to the same story.
+echo "== tunnel and slider"
+if ! ./check-tunnel; then
+  failed+=("tunnel/slider drift")
+fi
+
 echo
 if [ ${#failed[@]} -eq 0 ]; then
-  echo "all ${#repos[@]} pass"
+  echo "all ${#repos[@]} pass, and the tunnel example matches slider"
 else
   echo "failed: ${failed[*]}"
   exit 1

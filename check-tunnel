@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Holds blitzkit's tunnel example and the slider game to the same numbers.
+
+The two share an idea and about thirty lines of tube formula, but they are not
+the same code: one is a single file demonstrating the engine, the other is a
+game in seven modules with its maths under test. Copying text between them is
+not on. Letting their numbers drift apart is what actually went wrong, so this
+checks the numbers.
+
+It also runs slider's ring invariants against the example's own constants. The
+example cannot have tests of its own, because cargo does not run tests inside
+examples, so this is the only thing standing between it and a ring buried in
+the wall.
+"""
+
+import math
+import pathlib
+import re
+import sys
+
+HERE = pathlib.Path(__file__).resolve().parent
+EXAMPLE = HERE / "blitzkit" / "examples" / "tunnel.rs"
+GAME = [HERE / "slider" / "src" / name for name in ("tunnel.rs", "ring.rs", "ship.rs")]
+
+# What each side calls the same number. Anything here that disagrees is drift.
+SHARED = {
+    "LENGTH": "LENGTH",
+    "RADIUS": "RADIUS",
+    "WANDER_X": "WANDER_X",
+    "WANDER_Y": "WANDER_Y",
+    "TURNS_X": "TURNS_X",
+    "TURNS_Y": "TURNS_Y",
+    "CLEARANCE": "CLEARANCE",
+    "TILES_ALONG": "TILES_ALONG",
+    "TILES_AROUND": "TILES_AROUND",
+    "START_SPEED": "START_SPEED",
+    "TOP_SPEED": "TOP_SPEED",
+    "STEER": "STEER",
+    "DRAG": "DRAG",
+    "HOLE": "HOLE",
+    "RIM": "RIM",
+    "RING_WANDER": "WANDER",
+    "RING_TURN": "TURN",
+}
+SHARED_COUNTS = {"RINGS": "RINGS", "AROUND": "AROUND", "RINGS_TO_PASS": "COUNT"}
+
+
+def numbers(paths):
+    """Every f32 and integer constant in these files, by name."""
+    found = {}
+    for path in paths if isinstance(paths, list) else [paths]:
+        text = path.read_text()
+        for name, value in re.findall(
+            r"const\s+([A-Z_]+):\s*(?:f32|u32|usize)\s*=\s*([^;]+);", text
+        ):
+            value = value.strip()
+            # a constant defined from another, such as 0.6 of the start speed
+            if not re.fullmatch(r"[0-9_.]+", value):
+                continue
+            found[name] = float(value)
+    return found
+
+
+def drift(example, game):
+    out = []
+    for names in (SHARED, SHARED_COUNTS):
+        for theirs, ours in names.items():
+            a, b = example.get(theirs), game.get(ours)
+            if a is None or b is None:
+                out.append("  %s / %s: one side does not have it" % (theirs, ours))
+            elif abs(a - b) > 1e-9:
+                out.append("  %s is %g, slider's %s is %g" % (theirs, a, ours, b))
+    return out
+
+
+def rings(name, hole, rim, wander, count, turn):
+    """The same properties slider's ring tests assert, on whatever numbers.
+
+    Ported from slider/src/ring.rs. When those tests change, change these.
+    """
+    out = []
+    through, quadrants, free = [], set(), 0
+
+    for index in range(int(count)):
+        angle = index * turn
+        x, y = math.cos(angle) * wander, math.sin(angle) * wander
+        distance = math.hypot(x, y)
+
+        if distance + hole + rim > 1.0:
+            through.append(index)
+        if distance < hole:
+            free += 1
+        quadrants.add(min(int((math.atan2(y, x) + math.pi) / (math.pi / 2)), 3))
+
+    if through:
+        out.append("  %s: rings %s reach through the wall" % (name, through))
+    if len(quadrants) < 4:
+        out.append("  %s: only %d of 4 quarters get a ring" % (name, len(quadrants)))
+    if free:
+        out.append("  %s: %d rings need no steering at all" % (name, free))
+    if wander <= hole:
+        out.append("  %s: rings sit no further out than their holes are wide" % name)
+    return out
+
+
+# The shape the placement has to keep. Everything below reasons about the
+# numbers while assuming this formula, so if the formula itself changed, the
+# reasoning would be about something that is no longer there.
+PLACEMENT = re.compile(r"vec2\(\s*cos\s*,\s*sin\s*\)\s*\*\s*(RING_)?WANDER")
+
+
+def placement(name, path):
+    if PLACEMENT.search(path.read_text()):
+        return []
+
+    return [
+        "  %s: the ring placement is no longer a fixed distance in a turned"
+        " direction, so the checks below no longer describe it. Update this"
+        " script with it." % name
+    ]
+
+
+def main():
+    example, game = numbers(EXAMPLE), numbers(GAME)
+    problems = drift(example, game)
+    problems += placement("example", EXAMPLE)
+    problems += placement("slider", HERE / "slider" / "src" / "ring.rs")
+
+    for name, source, keys in (
+        ("example", example, ("HOLE", "RIM", "RING_WANDER", "RINGS_TO_PASS", "RING_TURN")),
+        ("slider", game, ("HOLE", "RIM", "WANDER", "COUNT", "TURN")),
+    ):
+        missing = [key for key in keys if key not in source]
+        if missing:
+            problems.append("  %s: cannot find %s" % (name, ", ".join(missing)))
+            continue
+        problems += rings(name, *(source[key] for key in keys))
+
+    if problems:
+        print("the tunnel example and slider have drifted:")
+        print("\n".join(problems))
+        return 1
+
+    print("tunnel and slider agree on %d numbers" % (len(SHARED) + len(SHARED_COUNTS)))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
