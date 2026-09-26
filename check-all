@@ -19,6 +19,13 @@ for repo in "${repos[@]}"; do
   fi
 done
 
+# Nothing in a cargo run reads prose, so a copy marker could sit in the readme
+# until `cargo publish` carried it to crates.io. It nearly did on 2026-09-26.
+echo "== copy markers"
+if ! (cd blitzkit && ./scripts/ship-check); then
+  failed+=("unclaimed copy")
+fi
+
 # The tunnel example and slider share an idea and a set of numbers. Nothing in
 # either repo can see the other, so this is the only place the two can be held
 # to the same story.
@@ -29,7 +36,7 @@ fi
 
 echo
 if [ ${#failed[@]} -eq 0 ]; then
-  echo "all ${#repos[@]} pass, and the tunnel example matches slider"
+  echo "all ${#repos[@]} pass, nothing ships in Claude's words, and the tunnel example matches slider"
 else
   echo "failed: ${failed[*]}"
   exit 1
